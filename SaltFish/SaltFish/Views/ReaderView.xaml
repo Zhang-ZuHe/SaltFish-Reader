@@ -1,0 +1,22 @@
+﻿<Window x:Class="SaltFish.Views.ReaderView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SaltFish" Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d" WindowStyle="None" AllowsTransparency="True" Topmost="True"
+        Title="Window1" ShowInTaskbar="False" Loaded="Window_Loaded" ContentRendered="Window_ContentRendered">
+    <Grid>
+        <RichTextBox x:Name="richbox" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden"
+                 Foreground="Black" ContextMenu="{x:Null}" Focusable="False" BorderThickness="0" Cursor="Arrow">
+            <RichTextBox.Background>
+                <SolidColorBrush Color="White" Opacity="0.002"/>
+            </RichTextBox.Background>
+            <RichTextBox.Document>
+                <FlowDocument x:Name="lineheight" Focusable="True">
+                </FlowDocument>
+            </RichTextBox.Document>
+        </RichTextBox>
+    </Grid>
+</Window>
