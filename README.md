@@ -1,2 +1,2 @@
 # SaltFish-Reader
-NovelReaderForWorking
+这是一个上班摸鱼时写的小项目，目的也是为了摸鱼，摸鱼是第一生产力！
