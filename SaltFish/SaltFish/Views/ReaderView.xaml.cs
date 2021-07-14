@@ -25,10 +25,15 @@ namespace SaltFish.Views
         /// 文件路径
         /// </summary>
         private string filepath;
-        public ReaderView(string file)
+        /// <summary>
+        /// 行间距
+        /// </summary>
+        private int LineHeight;
+        public ReaderView(string file,int lineheight)
         {
             InitializeComponent();
             filepath = file;
+            LineHeight = lineheight;
             //窗口拖动
             this.MouseDown += (x, y) =>
             {
@@ -47,21 +52,17 @@ namespace SaltFish.Views
         {
             //先将txt转换为utf-8存到缓存
             string outputpath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "temp.txt");
-            string content = File.ReadAllText(filepath, Encoding.Default);
+            Encoding filetype = FileHelper.GetType(filepath);
+            string content = File.ReadAllText(filepath, filetype);
             File.WriteAllText(outputpath, content, Encoding.UTF8);
-            //从缓存读取txt
-            FileStream fs;
-            if (File.Exists(outputpath))
-            {
-                fs = new FileStream(outputpath, FileMode.Open, FileAccess.Read);
-                using (fs)
-                {
-                    TextRange text = new TextRange(richbox.Document.ContentStart, richbox.Document.ContentEnd);
-                    text.Load(fs, DataFormats.Text);
-                }
-                fs.Close();
-                fs.Dispose();
-            }
+            ////从缓存异步读取txt
+            var doc = new FlowDocument();
+            doc.LineHeight = LineHeight;
+            Paragraph graph = new Paragraph();
+            doc.Blocks.Add(graph);
+            richbox.Document = doc;
+            Action action = new Action(() => { ReadText(graph, outputpath); });
+            action.BeginInvoke(null, null);
         }
         /// <summary>
         /// 窗口渲染
@@ -75,6 +76,40 @@ namespace SaltFish.Views
             {
                 double offset = AppConfig.History[file];
                 richbox.ScrollToVerticalOffset(offset);
+            }
+        }
+        /// <summary>
+        /// 异步加载txt文件
+        /// </summary>
+        /// <param name="graph"></param>
+        /// <param name="file"></param>
+        private static void ReadText(Paragraph graph, string file)
+        {
+            try
+            {
+                using (FileStream stream = new FileStream(file, FileMode.Open))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            var content = reader.ReadLine();
+                            if (!string.IsNullOrEmpty(content))
+                            {
+                                graph.Dispatcher.Invoke(() =>
+                                {
+                                    graph.Inlines.Add(content);
+                                    graph.Inlines.Add(Environment.NewLine);
+                                });
+                            }
+                            System.Threading.Thread.Sleep(5);
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
             }
         }
     }
