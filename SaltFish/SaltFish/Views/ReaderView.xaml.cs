@@ -101,9 +101,13 @@ namespace SaltFish.Views
                                     graph.Inlines.Add(content);
                                     graph.Inlines.Add(Environment.NewLine);
                                 });
+                                System.Threading.Thread.Sleep(5);
                             }
-                            System.Threading.Thread.Sleep(5);
                         }
+                        reader.Close();
+                        reader.Dispose();
+                        stream.Close();
+                        stream.Dispose();
                     }
                 }
             }
